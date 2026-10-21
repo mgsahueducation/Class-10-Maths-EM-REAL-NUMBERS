@@ -115,7 +115,19 @@ return[`Lowest terms: ${p}/${q}${g>1?` = <b>${P}/${Q}</b> (divided by ${g})`:' (
 `Denominator: ${Q} = <span class="chip">${fmt(F)}</span>`,
 ok?`Only 2 and/or 5 in q, so it <b class="zero">terminates</b>.`:`Prime factor <b class="hl">${bad[0]}</b> is not 2 or 5, so it <b class="hl">repeats</b>.`,
 `${P}/${Q} = <div class="dig">${ip}.${spans}${!ok&&st<0?'…':''}</div>`,
-`§${ok?'Terminating':'Non-terminating repeating'}`]}}
+`§${ok?'Terminating':'Non-terminating repeating'}`]}},
+{name:'5 · a + b√c',title:'The a + b√c Type',tag:'Isolate the root. Spot the contradiction.',
+key:'To prove a + b√c irrational, assume it is rational, then isolate √c. √c would be rational, which is a contradiction.',
+facts:['Examples: 3 + 2√5, 5 − √3, 7√2, 4 − 3√7.','Assume the whole number is rational: a + b√c = r.','Isolate the root: √c = (r − a)/b, which is rational.','But √c is irrational (proved earlier), so this is a <b>contradiction</b>. Always write it.'],
+inputs:[['a',3],['b',2],['c',5]],
+build([a,b,c]){if(!isPrime(c)||!b||!Number.isInteger(a)||!Number.isInteger(b))return['<div class="bad">Enter a prime c and b ≠ 0. For a minus sign use a negative b (5 − √3 means a=5, b=-1, c=3).</div>'];
+const ab=Math.abs(b),E=(a?a+(b<0?' − ':' + '):(b<0?'−':''))+(ab==1?'':ab)+'√'+c;
+const ra=a?`r ${a<0?'+':'−'} ${Math.abs(a)}`:'r',bt=(b==1?'':b==-1?'−':b)+'√'+c,bd=b<0?`(${b})`:b;
+return[`<b>Step 1.</b> Assume <span class="chip">${E}</span> is rational. Let ${E} = r, where r is rational.`,
+`<b>Step 2.</b> Isolate the root: ${bt} = ${ra}, so <b class="zero">√${c} = (${ra}) / ${bd}</b>.`,
+`<b>Step 3.</b> r, a and b are rational and b ≠ 0, so (${ra}) / ${bd} is rational. Hence √${c} is rational.`,
+`<b>Step 4.</b> But √${c} is irrational (proved earlier). <b class="hl">This contradicts our assumption that ${E} is rational.</b>`,
+`§Hence ${E} is <b>irrational</b>.`]}}
 ];
 
 let cur=0,tok=0;
@@ -124,7 +136,7 @@ POSTERS.forEach((P,i)=>{
  const b=document.createElement('button');b.textContent=P.name;b.onclick=()=>show(i);nav.appendChild(b);
  const s=document.createElement('section');s.className='poster';
  s.innerHTML=`<div><h1>${P.title}</h1><div class="tag">${P.tag}</div><ul class="facts">${P.facts.map(f=>`<li>${f}</li>`).join('')}</ul></div>
- <div><div class="ctl">${P.inputs.map(([n,v])=>`<label>${n}<input type="number" min="1" value="${v}" data-n="${n}"></label>`).join('')}
+ <div><div class="ctl">${P.inputs.map(([n,v])=>`<label>${n}<input type="number" value="${v}" data-n="${n}"></label>`).join('')}
  <button class="go">Run</button><button class="st">Step</button><button class="rs">Reset</button></div><div class="stage"></div></div>`;
  main.appendChild(s);P.el=s;P.stage=$('.stage',s);
  $('.go',s).onclick=()=>play();$('.st',s).onclick=()=>step();$('.rs',s).onclick=()=>{tok++;kids().forEach(k=>k.classList.remove('on'))};
@@ -138,10 +150,10 @@ async function play(){build();const my=++tok;await sleep(300);for(const k of kid
 function step(){if(!kids().length||kids().every(k=>k.classList.contains('on'))&&!1)build();tok++;const n=kids().find(k=>!k.classList.contains('on'));if(n)n.classList.add('on');else{build();kids()[0].classList.add('on')}}
 function show(i){tok++;cur=i;POSTERS.forEach((P,j)=>P.el.classList.toggle('on',j==i));[...nav.children].forEach((b,j)=>b.classList.toggle('on',j==i));play()}
 document.addEventListener('keydown',e=>{
- if(e.key==='ArrowRight')show((cur+1)%4);else if(e.key==='ArrowLeft')show((cur+3)%4);
+ if(e.key==='ArrowRight')show((cur+1)%5);else if(e.key==='ArrowLeft')show((cur+4)%5);
  else if(e.key===' '){e.preventDefault();play()}else if(e.key==='s'||e.key==='S')step();
  else if(e.key==='h'||e.key==='H')document.body.classList.toggle('clean')});
-show(Math.min(3,Math.max(0,(+location.hash.slice(1)||1)-1)));
+show(Math.min(4,Math.max(0,(+location.hash.slice(1)||1)-1)));
 </script>
 </body>
 </html>
